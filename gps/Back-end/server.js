@@ -59,25 +59,29 @@ var tcpServer = net.createServer((client) => {
     
             // Preparar los datos para enviar a la ruta /update-from-gps
             if (gt06.event.string === 'location') {
-         
+                const deviceData = {
+                    imei: gt06.imei,
+                    Lat: gt06.lat,
+                    Lon: gt06.lon,
+                    speed: gt06.speed,
+                    course: gt06.course,
+                    time: gt06.fixTime
+                };
                 console.log('Latitude:', gt06.lat);
                 console.log('Longitude:', gt06.lon);
                 console.log('Hora:', gt06.fixTime);
                 console.log('Rumbo:', gt06.course);
                 console.log('velocidad:', gt06.speed);
          
-        
+                // Enviar los datos a la ruta /update-from-gps
+                try {
+                    await axios.post(`http://3.12.147.103/devices/update-from-gps`, deviceData);
+                    console.log(`Datos enviados a /update-from-gps para IMEI: ${gt06.imei}`);
+                } catch (error) {
+                    console.error('Error al enviar los datos a /update-from-gps:', error.message);
+                    console.error('Configuración de la solicitud:', error.config);
                 }
-
-    
-            // Enviar los datos a la ruta /update-from-gps
-             try {
-                await axios.post(`http://3.12.147.103/devices/update-from-gps`, deviceData);
-                console.log(`Datos enviados a /update-from-gps para IMEI: ${gt06.imei}`);
-            } catch (error) {
-                
-                console.error('Configuración de la solicitud:', error.config);
-            } 
+            }
         });
         gt06.clearMsgBuffer();
     });
@@ -105,10 +109,10 @@ mongoose.connect('mongodb+srv://lospopulare:gps1234@gps.zgbl7.mongodb.net/proyec
 app.use('/auth', authRoutes);
 app.use('/devices', deviceRoutes);
 
-
-  app.get('/', (req, res) => {
+app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'dist', 'index.html'));
-  });
+});
+
 // Inicia el servidor HTTP en el puerto especificado
 app.listen(HTTP_PORT, () => {
     console.log(`Servidor HTTP corriendo en http://localhost:${HTTP_PORT}`);

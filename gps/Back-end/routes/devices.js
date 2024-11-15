@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Device = require('../models/Device').Device;
+const { Device, DeviceStatus } = require('../models/Device');
 const { getImei, setImei } = require('../config');
 
 // Listar todos los dispositivos
@@ -44,8 +44,7 @@ router.post('/', async (req, res) => {
 // Endpoint para actualizar la ubicación del dispositivo desde el GPS
 router.post('/update-from-gps', async (req, res) => {
     try {
-        const { imei, Lat, Lon, speed, course, time} = req.body;
-
+        const { imei, Lat, Lon, speed, course, time } = req.body;
 
         // Verificar que todos los datos requeridos estén presentes
         if (!imei || Lat === undefined || Lon === undefined) {
@@ -54,27 +53,24 @@ router.post('/update-from-gps', async (req, res) => {
 
         // Encontrar el dispositivo por IMEI
         const dispositivo = await Device.findOne({ imei });
-
         if (!dispositivo) {
             return res.status(404).json({ message: 'Dispositivo no encontrado' });
         }
 
-        // Actualizar las coordenadas del dispositivo
-        dispositivo.status = {
-           
-            fixTime: time,
-            coordenadas: {
-                latitud: Lat,
-                longitud: Lon,
-                velocidad: speed,
-                rumbo: course,
-                fecha: time
+        // Crear o actualizar el estado del dispositivo
+        const DeviceStatus = await DeviceStatus.findOneAndUpdate(
+            { imei },
+            {
+                imei,
+                fixTime: time,
+                lat: Lat,
+                lon: Lon,
+                speed,
+                course,
+                event: { string: 'location' }
             },
-    
-        };
-
-        // Guardar los cambios en la base de datos
-        await dispositivo.save();
+            { upsert: true, new: true }
+        );
 
         console.log(`Ubicación actualizada para IMEI: ${imei} - Latitud: ${Lat}, Longitud: ${Lon}`);
         res.json({ message: 'Ubicación actualizada exitosamente' });
