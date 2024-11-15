@@ -161,7 +161,7 @@ function filterResults() {
 }
 
 // Muestra un dispositivo seleccionado en el mapa
-function showDeviceOnMap(device) {
+async function showDeviceOnMap(device) {
   console.log('Mostrando dispositivo:', device);
   
   if (!map) {
@@ -169,37 +169,47 @@ function showDeviceOnMap(device) {
     return;
   }
 
-  // Limpiar marcadores existentes
-  map.eachLayer((layer) => {
-    if (layer instanceof L.Marker) {
-      map.removeLayer(layer);
+  try {
+    const response = await fetch(`http://3.12.147.103/devices/status/${device.imei}`);
+    if (!response.ok) {
+      throw new Error('Error en la respuesta de la API');
     }
-  });
+    const data = await response.json();
+    const { lat, lon } = data;
 
-  // Centrar el mapa en la ubicación del dispositivo
-  map.setView([device.coordenadas.latitud, device.coordenadas.longitud], 15);
+    // Limpiar marcadores existentes
+    map.eachLayer((layer) => {
+      if (layer instanceof L.Marker) {
+        map.removeLayer(layer);
+      }
+    });
 
-  // Añadir un nuevo marcador para el dispositivo
-  const marker = L.marker([device.coordenadas.latitud, device.coordenadas.longitud]).addTo(map);
+    // Centrar el mapa en la ubicación del dispositivo
+    map.setView([lat, lon], 15);
 
-  // Mostrar información del dispositivo en un popup
-  marker.bindPopup(`
-    <b>${device.deviceName}</b><br>
-    Latitud: ${device.coordenadas.latitud}<br>
-    Longitud: ${device.coordenadas.longitud}<br>
+    // Añadir un nuevo marcador para el dispositivo
+    const marker = L.marker([lat, lon]).addTo(map);
 
-  `).openPopup();
+    // Mostrar información del dispositivo en un popup
+    marker.bindPopup(`
+      <b>${device.deviceName}</b><br>
+      Latitud: ${lat}<br>
+      Longitud: ${lon}<br>
+    `).openPopup();
 
-  // Forzar una actualización del mapa
-  map.invalidateSize();
-
-  // Asegurar que el mapa se centre después de un breve retraso
-  setTimeout(() => {
-    map.setView([device.coordenadas.latitud, device.coordenadas.longitud], 18);
+    // Forzar una actualización del mapa
     map.invalidateSize();
-  }, 100);
 
-  console.log('Marcador añadido y mapa centrado');
+    // Asegurar que el mapa se centre después de un breve retraso
+    setTimeout(() => {
+      map.setView([lat, lon], 18);
+      map.invalidateSize();
+    }, 100);
+
+    console.log('Marcador añadido y mapa centrado');
+  } catch (error) {
+    console.error('Error al obtener la ubicación del dispositivo:', error);
+  }
 }
 
 // Muestra una alerta con los detalles del dispositivo
@@ -222,7 +232,6 @@ const showAlert = (item) => {
     }
   });
 };
-
 // Carga los dispositivos desde la API
 const cargarDispositivos = async () => {
   try {

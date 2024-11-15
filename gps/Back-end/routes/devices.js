@@ -101,6 +101,20 @@ router.put('/:id', async (req, res) => {
         res.status(500).json({ error: 'Error al actualizar dispositivo: ' + error.message });
     }
 });
+// En devices.js
+router.get('/status/:imei', async (req, res) => {
+    try {
+        const { imei } = req.params;
+        const deviceStatus = await DeviceStatus.findOne({ imei });
+        if (!deviceStatus) {
+            return res.status(404).json({ message: 'Estado del dispositivo no encontrado' });
+        }
+        res.json(deviceStatus);
+    } catch (error) {
+        console.error('Error al obtener el estado del dispositivo:', error.message);
+        res.status(500).json({ error: 'Error al obtener el estado del dispositivo: ' + error.message });
+    }
+});
 
 // Endpoint para eliminar un dispositivo
 router.delete('/:id', async (req, res) => {
