@@ -175,7 +175,7 @@ async function showDeviceOnMap(device) {
       throw new Error('Error en la respuesta de la API');
     }
     const data = await response.json();
-    const { lat, lon } = data;
+    const { lat, lon, fixTime, speed } = data;
 
     // Limpiar marcadores existentes
     map.eachLayer((layer) => {
@@ -195,6 +195,8 @@ async function showDeviceOnMap(device) {
       <b>${device.deviceName}</b><br>
       Latitud: ${lat}<br>
       Longitud: ${lon}<br>
+      Tiempor: ${fixTime}<br>
+      Velocidad: ${speed} km/h
     `).openPopup();
 
     // Forzar una actualización del mapa
