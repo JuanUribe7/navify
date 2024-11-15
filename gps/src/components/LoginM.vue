@@ -43,7 +43,7 @@ let index = 0;
 
 const login = async () => {
     try {
-        const response = await fetch('http://3.136.116.162/auth/login', {
+        const response = await fetch('http://3.12.147.103/auth/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

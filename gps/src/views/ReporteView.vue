@@ -270,7 +270,7 @@ const typeEffect = () => {
 // Función para cargar los dispositivos desde la base de datos
 const cargarDispositivos = async () => {
   try {
-    const response = await fetch('http://3.136.116.162/devices');
+    const response = await fetch('http://3.12.147.103/devices');
     if (!response.ok) {
       throw new Error('Error en la respuesta de la API');
     }
