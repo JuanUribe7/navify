@@ -166,7 +166,7 @@ const typeEffect = () => {
 // Funciones principales
 const cargarDispositivos = async () => {
   try {
-    const response = await fetch('http://3.12.147.103/devices');
+    const response = await fetch('http://localhost:80/devices');
     if (!response.ok) {
       throw new Error('Error en la respuesta de la API');
     }
