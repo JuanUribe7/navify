@@ -10,9 +10,9 @@
         <!-- Icono de notificación con indicador -->
         <router-link to="/reporte2">
           <button class="notification-btn">
-          <i class='bx bx-bell'></i>
-          <span class="notification-indicator"></span>
-        </button>
+            <i class='bx bx-bell'></i>
+            <span class="notification-indicator"></span>
+          </button>
         </router-link>
 
         <!-- Menú desplegable de configuración mejorado -->
@@ -39,7 +39,6 @@
       </div>
     </div>
 
-
     <div class="crud">
       <div class="titu">
         <h1><i class='bx bx-car icoon'></i> Mis Dispositivos</h1>
@@ -59,8 +58,6 @@
           </button>
         </div>
       </div>
-
- 
 
       <div class="cruds">
         <div class="arriba">
@@ -88,7 +85,6 @@
                 <th>Responsable</th>
                 <th>IMEI</th>
                 <th>Teléfono</th> <!-- Nueva columna -->
-
                 <th>Acción</th>
               </tr>
             </thead>
@@ -99,7 +95,6 @@
                 <td>{{ dispositivo.responsible }}</td>
                 <td>{{ dispositivo.imei }}</td>
                 <td>{{ dispositivo.phoneNumber }}</td> <!-- Nueva celda -->
-        
                 <td>
                   <i class='bx bx-edit iconD' @click="editarDispositivo(index)"></i>
                   <i class='bx bx-trash iconD' @click="eliminarDispositivo(index)"></i>
@@ -128,7 +123,6 @@ const fullText = "Navify";
 let currentIndex = 0;
 let isDeleting = false;
 let typingInterval;
-
 
 // Computed properties
 const filteredDispositivos = computed(() => {
@@ -166,7 +160,7 @@ const typeEffect = () => {
 // Funciones principales
 const cargarDispositivos = async () => {
   try {
-    const response = await fetch('http://localhost:80/devices');
+    const response = await fetch('http://3.12.147.103/devices');
     if (!response.ok) {
       throw new Error('Error en la respuesta de la API');
     }
@@ -284,7 +278,6 @@ const insertarDispositivo = async () => {
       <input id="responsable" class="swal2-input" placeholder="Responsable">
       <input id="imei" class="swal2-input" placeholder="IMEI">
       <input id="telefono" class="swal2-input" placeholder="Teléfono"> <!-- Nuevo campo -->
-  
     `,
     focusConfirm: false,
     showCancelButton: true,
@@ -295,7 +288,6 @@ const insertarDispositivo = async () => {
       const responsable = document.getElementById('responsable').value;
       const imei = document.getElementById('imei').value;
       const telefono = document.getElementById('telefono').value; // Nuevo campo
-
 
       if (!nombre || !responsable || !imei) {
         Swal.showValidationMessage('Por favor, complete todos los campos obligatorios.');
@@ -318,7 +310,7 @@ const insertarDispositivo = async () => {
   });
 
   if (imei) {
-      fetch('http://3.12.147.103/devices', {
+    fetch('http://3.12.147.103/devices', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
