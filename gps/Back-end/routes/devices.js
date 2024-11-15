@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Device, DeviceStatus } = require('../models/Device'); // Asegúrate de importar DeviceStatus
+const { Device, DeviceStatus } = require('../models/Device').Device; // Asegúrate de importar DeviceStatus
 
 // Endpoint para actualizar la ubicación del dispositivo desde el GPS
 router.post('/update-from-gps', async (req, res) => {
