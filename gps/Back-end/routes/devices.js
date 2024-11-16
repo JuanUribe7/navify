@@ -38,8 +38,7 @@ router.post('/update-from-gps', async (req, res) => {
                 lat: Lat,
                 lon: Lon,
                 speed,
-                course,
-                event: { string: 'location' }
+                course
             },
             { upsert: true, new: true }
         );

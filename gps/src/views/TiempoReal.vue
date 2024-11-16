@@ -99,6 +99,7 @@ const dropdownOpen = ref(false);
 const searchQuery = ref('');
 const devices = ref([]);
 const filteredResults = ref([]);
+let trackingIntervalId = null
 
 // Funciones
 
@@ -175,7 +176,7 @@ async function showDeviceOnMap(device) {
       throw new Error('Error en la respuesta de la API');
     }
     const data = await response.json();
-    const { lat, lon, fixTime, speed } = data;
+    const { lat, lon } = data;
 
     // Limpiar marcadores existentes
     map.eachLayer((layer) => {
@@ -195,8 +196,6 @@ async function showDeviceOnMap(device) {
       <b>${device.deviceName}</b><br>
       Latitud: ${lat}<br>
       Longitud: ${lon}<br>
-      Tiempor: ${fixTime}<br>
-      Velocidad: ${speed} km/h
     `).openPopup();
 
     // Forzar una actualización del mapa
@@ -212,6 +211,19 @@ async function showDeviceOnMap(device) {
   } catch (error) {
     console.error('Error al obtener la ubicación del dispositivo:', error);
   }
+}
+
+
+function startTracking(device) {
+  // Detener cualquier seguimiento anterior
+  if (trackingIntervalId) {
+    clearInterval(trackingIntervalId);
+  }
+
+  // Iniciar un nuevo seguimiento
+  trackingIntervalId = setInterval(() => {
+    showDeviceOnMap(device);
+  }, 5000); // Actualizar cada 5 segundos
 }
 
 // Muestra una alerta con los detalles del dispositivo
@@ -230,7 +242,7 @@ const showAlert = (item) => {
     cancelButtonText: 'Cancelar'
   }).then((result) => {
     if (result.isConfirmed) {
-      showDeviceOnMap(item); 
+      startTracking(item); // Iniciar el seguimiento del dispositivo
     }
   });
 };
@@ -254,6 +266,9 @@ const cargarDispositivos = async () => {
 // Lifecycle hooks
 onUnmounted(() => {
   clearTimeout(typingInterval);
+  if (trackingIntervalId) {
+    clearInterval(trackingIntervalId);
+  }
 });
 
 onMounted(() => {
