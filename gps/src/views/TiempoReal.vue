@@ -196,8 +196,8 @@ async function showDeviceOnMap(device) {
       <b>${device.deviceName}</b><br>
       Latitud: ${lat}<br>
       Longitud: ${lon}<br>
-      tiempo: ${fixTime}<br>
-      velocidad${speed}
+      Tiempo: ${fixTime}<br>
+      Velocidad: ${speed}
     `).openPopup();
 
     // Forzar una actualización del mapa
@@ -212,11 +212,15 @@ async function showDeviceOnMap(device) {
     console.log('Marcador añadido y mapa centrado');
   } catch (error) {
     console.error('Error al obtener la ubicación del dispositivo:', error);
+    Swal.fire('Error', 'No se pudo obtener la ubicación del dispositivo', 'error');
   }
 }
 
 
 function startTracking(device) {
+  // Mostrar la ubicación inmediatamente
+  showDeviceOnMap(device);
+
   // Detener cualquier seguimiento anterior
   if (trackingIntervalId) {
     clearInterval(trackingIntervalId);
@@ -241,10 +245,14 @@ const showAlert = (item) => {
     `,
     confirmButtonText: 'Mostrar en Mapa',
     showCancelButton: true,
-    cancelButtonText: 'Cancelar'
+    cancelButtonText: 'Cancelar',
+    didOpen: () => {
+      Swal.showLoading(); // Mostrar indicador de carga
+    }
   }).then((result) => {
     if (result.isConfirmed) {
       startTracking(item); // Iniciar el seguimiento del dispositivo
+      Swal.close(); // Cerrar el indicador de carga
     }
   });
 };
